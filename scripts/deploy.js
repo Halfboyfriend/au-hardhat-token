@@ -1,16 +1,11 @@
-// We require the Hardhat Runtime Environment explicitly here. This is optional
-// but useful for running the script in a standalone fashion through `node <script>`.
-//
-// You can also run a script with `npx hardhat run <script>`. If you do that, Hardhat
-// will compile your contracts, add the Hardhat Runtime Environment's members to the
-// global scope, and execute the script.
+
 const hre = require("hardhat");
 require('dotenv').config();
 
 async function main() {
-  const url = process.env.ALCHEMY_TESTNET_URL;
+  const url = process.env.BSC_TESTNET_URL;
 
-  let artifacts = await hre.artifacts.readArtifact('Faucet');
+  let artifacts = await hre.artifacts.readArtifact('Appleween');
   const provider = new hre.ethers.providers.JsonRpcProvider(url);
 
   let privateKey = process.env.TESTNET_PRIVATE_KEY;
@@ -19,11 +14,16 @@ async function main() {
 
   let factory = new hre.ethers.ContractFactory(artifacts.abi, artifacts.bytecode, wallet);
   
+  console.log('DEPLOYING NOW')
 
-  let faucet = await factory.deploy();
+  let faucet = await factory.deploy('0x10ED43C718714eb63d5aA57B78B54704E256024E', {
+    gasLimit: 5000000,
+  });
 
   console.log(`Faucet address: ${faucet.address}`);
   await faucet.deployed();
+  console.log('DEPLOYED')
+
 }
 
 // We recommend this pattern to be able to use async/await everywhere
